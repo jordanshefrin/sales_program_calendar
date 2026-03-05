@@ -43,6 +43,18 @@ export default function Calendar({ onDateClick, onEventClick }: Props) {
       const checklist = { ...(evt.checklist || {}) };
       checklist[item] = !checklist[item];
 
+      // Instantly update the DOM so user sees the change
+      const checkbox = target as HTMLInputElement;
+      checkbox.checked = checklist[item];
+      const span = checkbox.nextElementSibling;
+      if (span) {
+        if (checklist[item]) {
+          span.classList.add("checked-item");
+        } else {
+          span.classList.remove("checked-item");
+        }
+      }
+
       setEvents((prev) =>
         prev.map((ev) => (ev.id === eventId ? { ...ev, checklist } : ev))
       );
