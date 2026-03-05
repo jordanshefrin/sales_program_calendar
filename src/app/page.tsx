@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import ProgramForm from "@/components/ProgramForm";
 import Calendar from "@/components/Calendar";
 import EventModal from "@/components/EventModal";
 import PerformanceDashboard from "@/components/PerformanceDashboard";
@@ -44,10 +45,14 @@ export default function Home() {
         </p>
       </header>
 
+      {/* Program Submission Form */}
+      <div className="px-6 pt-6">
+        <ProgramForm onSubmitted={() => setRefreshKey((k) => k + 1)} />
+      </div>
+
       {/* Main Layout: Calendar (left) + Dashboard (right) */}
       <main className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Calendar — takes 3/5 */}
           <div className="lg:col-span-3">
             <Calendar
               key={refreshKey}
@@ -55,8 +60,6 @@ export default function Home() {
               onEventClick={handleEventClick}
             />
           </div>
-
-          {/* Performance Dashboard — takes 2/5 */}
           <div className="lg:col-span-2">
             <PerformanceDashboard />
           </div>
