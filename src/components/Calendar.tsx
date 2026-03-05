@@ -136,6 +136,7 @@ export default function Calendar({ onDateClick, onEventClick }: Props) {
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         editable={true}
+        weekends={false}
         eventDrop={handleEventDrop}
         dateClick={(info) => onDateClick(info.dateStr)}
         eventClick={(info) => {
