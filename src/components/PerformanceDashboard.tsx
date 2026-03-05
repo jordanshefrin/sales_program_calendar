@@ -8,143 +8,88 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
 } from "recharts";
 
-type PerformanceRow = {
-  program_name: string;
-  revenue: number;
-  leads: number;
-  conversion_rate: number;
-  period: string;
+type Program = {
+  id: string;
+  name: string;
 };
 
-const COLORS = ["#3b82f6", "#f59e0b", "#10b981", "#8b5cf6"];
-
 export default function PerformanceDashboard() {
-  const [data, setData] = useState<PerformanceRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [selectedProgram, setSelectedProgram] = useState<string>("");
 
   useEffect(() => {
-    fetch("/api/performance")
+    fetch("/api/programs")
       .then((r) => r.json())
       .then((d) => {
-        if (Array.isArray(d)) setData(d);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+        if (Array.isArray(d)) {
+          setPrograms(d);
+          if (d.length > 0) setSelectedProgram(d[0].name);
+        }
+      });
   }, []);
 
-  if (loading) {
-    return (
-      <div className="bg-white rounded-lg shadow p-6 animate-pulse">
-        <div className="h-4 bg-gray-200 rounded w-1/3 mb-4" />
-        <div className="h-48 bg-gray-100 rounded" />
-      </div>
-    );
-  }
+  // Placeholder data per program — will be replaced with real data later
+  const chartData = [
+    { week: "Week 1", s2_pipeline: Math.round(10000 + Math.random() * 40000) },
+    { week: "Week 2", s2_pipeline: Math.round(10000 + Math.random() * 40000) },
+    { week: "Week 3", s2_pipeline: Math.round(10000 + Math.random() * 40000) },
+    { week: "Week 4", s2_pipeline: Math.round(10000 + Math.random() * 40000) },
+  ];
 
-  // Aggregate by period for the bar chart
-  const periods = [...new Set(data.map((d) => d.period))];
-  const programs = [...new Set(data.map((d) => d.program_name))];
-
-  const revenueByPeriod = periods.map((period) => {
-    const row: Record<string, string | number> = { period };
-    programs.forEach((prog) => {
-      const match = data.find((d) => d.period === period && d.program_name === prog);
-      row[prog] = match?.revenue || 0;
-    });
-    return row;
-  });
-
-  const conversionByPeriod = periods.map((period) => {
-    const row: Record<string, string | number> = { period };
-    programs.forEach((prog) => {
-      const match = data.find((d) => d.period === period && d.program_name === prog);
-      row[prog] = match?.conversion_rate || 0;
-    });
-    return row;
-  });
-
-  // Summary cards
-  const totalRevenue = data.reduce((s, d) => s + d.revenue, 0);
-  const totalLeads = data.reduce((s, d) => s + d.leads, 0);
-  const avgConversion = data.length
-    ? +(data.reduce((s, d) => s + d.conversion_rate, 0) / data.length).toFixed(1)
-    : 0;
+  const totalPipeline = chartData.reduce((s, d) => s + d.s2_pipeline, 0);
 
   return (
     <div className="space-y-4">
+      {/* Program Selector */}
+      <div className="bg-white rounded-lg shadow p-4">
+        <label className="block text-xs text-gray-500 mb-1">Program</label>
+        <select
+          value={selectedProgram}
+          onChange={(e) => setSelectedProgram(e.target.value)}
+          className="w-full border rounded-md px-3 py-2 text-sm text-gray-900"
+        >
+          {programs.map((p) => (
+            <option key={p.id} value={p.name}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm text-gray-500">Total Revenue</p>
+          <p className="text-xs text-gray-500">S2 Pipeline</p>
           <p className="text-2xl font-bold text-gray-900">
-            ${(totalRevenue / 1000).toFixed(0)}k
+            ${(totalPipeline / 1000).toFixed(0)}k
           </p>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm text-gray-500">Total Leads</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {totalLeads.toLocaleString()}
-          </p>
+          <p className="text-xs text-gray-500">MQLs</p>
+          <p className="text-2xl font-bold text-gray-900">—</p>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm text-gray-500">Avg Conversion</p>
-          <p className="text-2xl font-bold text-gray-900">{avgConversion}%</p>
+          <p className="text-xs text-gray-500">MQL-to-S2 Rate</p>
+          <p className="text-2xl font-bold text-gray-900">—</p>
         </div>
       </div>
 
-      {/* Revenue Bar Chart */}
+      {/* Bar Chart */}
       <div className="bg-white rounded-lg shadow p-4">
         <h3 className="text-sm font-semibold text-gray-700 mb-3">
-          Revenue by Program
+          {selectedProgram || "Program"} — S2 Pipeline by Week
         </h3>
         <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={revenueByPeriod}>
+          <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="period" tick={{ fontSize: 12 }} />
+            <XAxis dataKey="week" tick={{ fontSize: 12 }} />
             <YAxis tick={{ fontSize: 12 }} />
             <Tooltip />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
-            {programs.map((prog, i) => (
-              <Bar
-                key={prog}
-                dataKey={prog}
-                fill={COLORS[i % COLORS.length]}
-                radius={[2, 2, 0, 0]}
-              />
-            ))}
+            <Bar dataKey="s2_pipeline" fill="#3b82f6" radius={[2, 2, 0, 0]} />
           </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Conversion Line Chart */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">
-          Conversion Rate Trend
-        </h3>
-        <ResponsiveContainer width="100%" height={220}>
-          <LineChart data={conversionByPeriod}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="period" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
-            {programs.map((prog, i) => (
-              <Line
-                key={prog}
-                type="monotone"
-                dataKey={prog}
-                stroke={COLORS[i % COLORS.length]}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-              />
-            ))}
-          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
