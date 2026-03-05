@@ -68,6 +68,14 @@ export default function ProgramForm({ onSubmitted }: Props) {
       },
     ];
 
+    // Create the program record
+    await fetch("/api/programs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, launch_date: date || tuesdays[0] }),
+    });
+
+    // Create calendar events
     for (const event of events) {
       await fetch("/api/events", {
         method: "POST",

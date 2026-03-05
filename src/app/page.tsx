@@ -5,6 +5,7 @@ import ProgramForm from "@/components/ProgramForm";
 import Calendar from "@/components/Calendar";
 import EventModal from "@/components/EventModal";
 import PerformanceDashboard from "@/components/PerformanceDashboard";
+import ProgramTable from "@/components/ProgramTable";
 import { CalendarEvent } from "@/lib/supabase";
 
 export default function Home() {
@@ -65,6 +66,11 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {/* Programs Table */}
+      <div className="px-6 pb-6">
+        <ProgramTable refreshKey={refreshKey} />
+      </div>
 
       {/* Event Modal */}
       {(modalDate || modalEvent) && (
