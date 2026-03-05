@@ -42,7 +42,7 @@ export default function Home() {
           Sales Program Calendar
         </h1>
         <p className="text-sm text-gray-500">
-          Content calendar & performance dashboard
+          Outbound Content calendar & performance dashboard
         </p>
       </header>
 

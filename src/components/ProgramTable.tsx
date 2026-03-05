@@ -245,7 +245,7 @@ export default function ProgramTable({ refreshKey, onProgramChanged }: { refresh
                 <th className="px-6 py-3">Program</th>
                 <th className="px-6 py-3">Launch Date</th>
                 <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Performance Snapshot</th>
+                <th className="px-6 py-3">Notes</th>
                 <th className="px-6 py-3">Details</th>
               </tr>
             </thead>
