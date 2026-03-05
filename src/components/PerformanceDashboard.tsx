@@ -119,6 +119,18 @@ export default function PerformanceDashboard() {
         </select>
       </div>
 
+      {/* Program Summary Blurb */}
+      {selected && (
+        <div className="bg-white rounded-lg shadow p-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">
+            Program Summary
+          </h3>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {generateBlurb(selected, totalPipeline)}
+          </p>
+        </div>
+      )}
+
       {/* KPI Cards */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-lg shadow p-4">
@@ -153,17 +165,6 @@ export default function PerformanceDashboard() {
         </ResponsiveContainer>
       </div>
 
-      {/* Program Summary Blurb */}
-      {selected && (
-        <div className="bg-white rounded-lg shadow p-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-2">
-            Program Summary
-          </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            {generateBlurb(selected, totalPipeline)}
-          </p>
-        </div>
-      )}
     </div>
   );
 }
