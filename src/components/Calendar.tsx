@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -81,7 +81,7 @@ export default function Calendar({ onDateClick, onEventClick }: Props) {
     }
   }
 
-  const renderEventContent = useCallback((arg: { event: { id: string; title: string } }) => {
+  function renderEventContent(arg: { event: { id: string; title: string } }) {
     const evt = events.find((e) => e.id === arg.event.id);
     if (!evt) return null;
     const items = CHECKLIST_ITEMS[evt.event_type] || [];
@@ -106,7 +106,7 @@ export default function Calendar({ onDateClick, onEventClick }: Props) {
         </div>
       </div>
     );
-  }, [events]);
+  }
 
   return (
     <div ref={containerRef} className="bg-white rounded-lg shadow p-4 calendar-checklist">
@@ -173,6 +173,7 @@ export default function Calendar({ onDateClick, onEventClick }: Props) {
           end: e.end_date || undefined,
           backgroundColor: e.color,
           borderColor: e.color,
+          extendedProps: { checklist: e.checklist || {} },
         }))}
         headerToolbar={{
           left: "prev,next today",
