@@ -6,6 +6,7 @@ import Calendar from "@/components/Calendar";
 import EventModal from "@/components/EventModal";
 import PerformanceDashboard from "@/components/PerformanceDashboard";
 import ProgramTable from "@/components/ProgramTable";
+import BacklogTable from "@/components/BacklogTable";
 import { CalendarEvent } from "@/lib/supabase";
 
 export default function Home() {
@@ -70,6 +71,11 @@ export default function Home() {
       {/* Programs Table */}
       <div className="px-6 pb-6">
         <ProgramTable refreshKey={refreshKey} onProgramChanged={() => setRefreshKey((k) => k + 1)} />
+      </div>
+
+      {/* Backlog */}
+      <div className="px-6 pb-6">
+        <BacklogTable />
       </div>
 
       {/* Event Modal */}
