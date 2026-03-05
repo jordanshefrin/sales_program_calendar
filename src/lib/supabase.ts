@@ -22,5 +22,12 @@ export type CalendarEvent = {
   end_date: string | null;
   event_type: "content" | "reminder" | "review";
   color: string;
+  checklist: Record<string, boolean>;
   created_at: string;
+};
+
+export const CHECKLIST_ITEMS: Record<string, string[]> = {
+  content: ["Target account list ready", "Toolkit ready", "Performance tracking ready"],
+  reminder: ["Underperforming", "Overperforming"],
+  review: ["Continue", "Retire"],
 };

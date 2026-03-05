@@ -32,10 +32,14 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const { id, start_date } = await req.json();
+  const { id, start_date, checklist } = await req.json();
+  const updates: Record<string, unknown> = {};
+  if (start_date !== undefined) updates.start_date = start_date;
+  if (checklist !== undefined) updates.checklist = checklist;
+
   const { error } = await getSupabase()
     .from("events")
-    .update({ start_date })
+    .update(updates)
     .eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
