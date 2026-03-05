@@ -69,7 +69,7 @@ export default function Home() {
 
       {/* Programs Table */}
       <div className="px-6 pb-6">
-        <ProgramTable refreshKey={refreshKey} />
+        <ProgramTable refreshKey={refreshKey} onProgramChanged={() => setRefreshKey((k) => k + 1)} />
       </div>
 
       {/* Event Modal */}
