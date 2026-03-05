@@ -31,6 +31,17 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(data, { status: 201 });
 }
 
+export async function PATCH(req: NextRequest) {
+  const { id, start_date } = await req.json();
+  const { error } = await getSupabase()
+    .from("events")
+    .update({ start_date })
+    .eq("id", id);
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ success: true });
+}
+
 export async function DELETE(req: NextRequest) {
   const { id } = await req.json();
   const { error } = await getSupabase().from("events").delete().eq("id", id);

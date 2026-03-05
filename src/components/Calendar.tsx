@@ -26,11 +26,28 @@ export default function Calendar({ onDateClick, onEventClick }: Props) {
     }
   }
 
+  async function handleEventDrop(info: { event: { id: string; startStr: string }; revert: () => void }) {
+    const res = await fetch("/api/events", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: info.event.id, start_date: info.event.startStr }),
+    });
+    if (res.ok) {
+      setEvents((prev) =>
+        prev.map((e) => (e.id === info.event.id ? { ...e, start_date: info.event.startStr } : e))
+      );
+    } else {
+      info.revert();
+    }
+  }
+
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
+        editable={true}
+        eventDrop={handleEventDrop}
         dateClick={(info) => onDateClick(info.dateStr)}
         eventClick={(info) => {
           const evt = events.find((e) => e.id === info.event.id);

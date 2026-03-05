@@ -20,6 +20,7 @@ export default function EventModal({ date, event, onClose, onSaved }: Props) {
   const [title, setTitle] = useState(event?.title || "");
   const [description, setDescription] = useState(event?.description || "");
   const [eventType, setEventType] = useState(event?.event_type || "content");
+  const [eventDate, setEventDate] = useState(event?.start_date || date || "");
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
@@ -27,7 +28,7 @@ export default function EventModal({ date, event, onClose, onSaved }: Props) {
     const body = {
       title,
       description: description || null,
-      start_date: date || event?.start_date,
+      start_date: eventDate,
       event_type: eventType,
       color: EVENT_TYPES.find((t) => t.value === eventType)?.color || "#3b82f6",
     };
@@ -42,6 +43,18 @@ export default function EventModal({ date, event, onClose, onSaved }: Props) {
     onSaved();
   }
 
+  async function handleMove() {
+    if (!event) return;
+    setSaving(true);
+    await fetch("/api/events", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: event.id, start_date: eventDate }),
+    });
+    setSaving(false);
+    onSaved();
+  }
+
   async function handleDelete() {
     if (!event) return;
     await fetch("/api/events", {
@@ -52,6 +65,8 @@ export default function EventModal({ date, event, onClose, onSaved }: Props) {
     onSaved();
   }
 
+  const dateChanged = event && eventDate !== event.start_date;
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
@@ -60,6 +75,18 @@ export default function EventModal({ date, event, onClose, onSaved }: Props) {
         </h2>
 
         <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Date
+            </label>
+            <input
+              type="date"
+              value={eventDate}
+              onChange={(e) => setEventDate(e.target.value)}
+              className="w-full border rounded-md px-3 py-2 text-sm text-gray-900"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Title
@@ -122,13 +149,23 @@ export default function EventModal({ date, event, onClose, onSaved }: Props) {
             >
               Cancel
             </button>
-            <button
-              onClick={handleSave}
-              disabled={!title || saving}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save"}
-            </button>
+            {event && dateChanged ? (
+              <button
+                onClick={handleMove}
+                disabled={saving}
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              >
+                {saving ? "Moving..." : "Move Event"}
+              </button>
+            ) : !event ? (
+              <button
+                onClick={handleSave}
+                disabled={!title || saving}
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
+            ) : null}
           </div>
         </div>
       </div>
