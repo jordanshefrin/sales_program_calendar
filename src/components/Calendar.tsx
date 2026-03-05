@@ -125,10 +125,31 @@ export default function Calendar({ onDateClick, onEventClick }: Props) {
         }
         .event-checklist label:hover { color: #fff; }
         .event-checklist input[type="checkbox"] {
+          appearance: none;
+          -webkit-appearance: none;
           width: 12px;
           height: 12px;
           cursor: pointer;
           flex-shrink: 0;
+          border: 1.5px solid rgba(255,255,255,0.7);
+          border-radius: 2px;
+          background: transparent;
+          position: relative;
+        }
+        .event-checklist input[type="checkbox"]:checked {
+          background: rgba(255,255,255,0.9);
+          border-color: rgba(255,255,255,0.9);
+        }
+        .event-checklist input[type="checkbox"]:checked::after {
+          content: "";
+          position: absolute;
+          left: 3px;
+          top: 0px;
+          width: 4px;
+          height: 7px;
+          border: solid rgba(0,0,0,0.7);
+          border-width: 0 1.5px 1.5px 0;
+          transform: rotate(45deg);
         }
         .event-checklist .checked-item { text-decoration: line-through; opacity: 0.7; }
       `}</style>
