@@ -31,10 +31,11 @@ function generateBlurb(program: Program, totalPipeline: number): string {
       day: "numeric",
       year: "numeric",
     });
-    parts.push(`${program.name} launched on ${launchStr}.`);
+    const now = new Date();
+    const isFuture = launch.getTime() > now.getTime();
+    parts.push(`${program.name} ${isFuture ? "launches" : "launched"} on ${launchStr}.`);
 
     // How long has it been running
-    const now = new Date();
     const diffMs = now.getTime() - launch.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
