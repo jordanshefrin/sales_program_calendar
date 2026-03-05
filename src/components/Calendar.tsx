@@ -6,6 +6,27 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { CalendarEvent, CHECKLIST_ITEMS } from "@/lib/supabase";
 
+const PROGRAM_COLORS = [
+  "#3b82f6", "#8b5cf6", "#06b6d4", "#f97316", "#ec4899",
+  "#14b8a6", "#ef4444", "#a855f7", "#0ea5e9", "#84cc16",
+];
+
+function getProgramName(event: CalendarEvent): string {
+  const title = event.title;
+  if (title.endsWith(" Performance Check")) return title.replace(" Performance Check", "");
+  if (title.endsWith(" #2?")) return title.replace(" #2?", "");
+  return title;
+}
+
+function getProgramColorMap(events: CalendarEvent[]): Record<string, string> {
+  const programs = [...new Set(events.map(getProgramName))];
+  const map: Record<string, string> = {};
+  programs.forEach((name, i) => {
+    map[name] = PROGRAM_COLORS[i % PROGRAM_COLORS.length];
+  });
+  return map;
+}
+
 type Props = {
   onDateClick: (date: string) => void;
   onEventClick: (event: CalendarEvent) => void;
@@ -178,15 +199,21 @@ export default function Calendar({ onDateClick, onEventClick }: Props) {
           if (evt) onEventClick(evt);
         }}
         eventContent={renderEventContent}
-        events={events.map((e) => ({
-          id: e.id,
-          title: e.title,
-          start: e.start_date,
-          end: e.end_date || undefined,
-          backgroundColor: e.color,
-          borderColor: e.color,
-          extendedProps: { checklist: e.checklist || {} },
-        }))}
+        events={(() => {
+          const colorMap = getProgramColorMap(events);
+          return events.map((e) => {
+            const programColor = colorMap[getProgramName(e)] || e.color;
+            return {
+              id: e.id,
+              title: e.title,
+              start: e.start_date,
+              end: e.end_date || undefined,
+              backgroundColor: programColor,
+              borderColor: programColor,
+              extendedProps: { checklist: e.checklist || {} },
+            };
+          });
+        })()}
         headerToolbar={{
           left: "prev,next today",
           center: "title",
